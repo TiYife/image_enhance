@@ -10,7 +10,7 @@
 using namespace std;
 using namespace cv;
 int depth = 1;
-double alpha = 0.1,beta = 1;
+double alpha = 0.1,beta = 1.5;
 
 Mat get_gray(Mat src, int channel){
     int cols = src.cols;

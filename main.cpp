@@ -11,7 +11,7 @@ using namespace cv;
 
 
 
-void hist(const Mat &src,int i){
+Mat hist(const Mat &src){
     Mat imageRGB[3];
     split(src, imageRGB);
     for (int i = 0; i < 3; i++)
@@ -22,18 +22,18 @@ void hist(const Mat &src,int i){
     merge(imageRGB, 3, dst);
     //imshow("直方图均衡化图像增强效果", dst);
     //waitKey();
-    imwrite("output/Hist/"+ to_string(i) + ".png", dst);      //写出图像
+    return dst;
 }
 
-void laplace(const Mat& src, int i){
+Mat laplace(const Mat& src){
     Mat dst;
     Mat kernel = (Mat_<float>(3, 3) << 0, -1, 0, -1, 5, -1, 0, -1, 0);
     filter2D(src, dst, CV_8UC3, kernel);
-    imwrite("output/Laplace/"+ to_string(i) + ".png", dst);      //写出图像
+    return dst;
 }
 
 
-void gamma(const Mat& src,int i){
+Mat gamma(const Mat& src){
     Mat dst(src.size(), CV_32FC3);
     double r = 0.5;
     for (int i = 0; i < src.rows; i++)
@@ -49,33 +49,38 @@ void gamma(const Mat& src,int i){
     normalize(dst, dst, 0, 255, CV_MINMAX);
     //转换成8bit图像显示
     convertScaleAbs(dst, dst);
-    imwrite("output/Gamma/"+ to_string(i) + ".png", dst);      //写出图像
+    return dst;
 }
 
 
 
 int main()
 {
-    Mat src, dst1, dst2;
+    Mat src, dst1, dst2, dst3, dst4, dst5, dst6;
     namedWindow("src",0);
     namedWindow("dst",0);
     for(int i= 1;i<=5;i++){
-        src = imread("input/"+ to_string(i) + ".png", IMREAD_COLOR);  //以彩色的方式读入图像
+        src = imread("../input/"+ to_string(i) + ".png", IMREAD_COLOR);  //以彩色的方式读入图像
 
         if (!src.data)               //判断图像是否被正确读取；
         {
             return 0;
         }
 
-        hist(src,i);
-        laplace(src,i);
-        gamma(src,i);
+        dst1 = hist(src);
+        imwrite("../output/Laplace/"+ to_string(i) + ".png", dst1);      //写出图像
 
-        dst1 = MultiScaleDetailBoosting(src,5);
-        imwrite("output/MSDB/"+ to_string(i) + ".png", dst1);      //写出图像
+        dst2 = laplace(src);
+        imwrite("../output/Laplace/"+ to_string(i) + ".png", dst2);      //写出图像
 
-        dst2 = CLAHE_DWT(src);
-        imwrite("output/CLAHE_DWT/"+ to_string(i) + ".png", dst2);      //写出图像
+        dst3 = gamma(src);
+        imwrite("../output/Laplace/"+ to_string(i) + ".png", dst3);      //写出图像
+
+        dst4 = MultiScaleDetailBoosting(src,5);
+        imwrite("../output/MSDB/"+ to_string(i) + ".png", dst4);      //写出图像
+
+        dst5 = CLAHE_DWT(src);
+        imwrite("../output/CLAHE_DWT/"+ to_string(i) + ".png", dst5);      //写出图像
 
         cout<<i<<endl;
     }
